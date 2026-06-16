@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
+
+    <include file="1781197152_core.sql" relativeToChangelogFile="true"/>
+    <include file="1781197261_roles.sql" relativeToChangelogFile="true"/>
+    <include file="1781197486_quidditch.sql" relativeToChangelogFile="true"/>
+    <include file="1781197579_academics.sql" relativeToChangelogFile="true"/>
+    <include file="1781198076_events.sql" relativeToChangelogFile="true"/>
+    <include file="1781198101_seed_data.sql" relativeToChangelogFile="true"/>
+
+    <changeSet id="tag_before" author="shapovalov">
+        <tagDatabase tag="before"/>
+    </changeSet>
+
+    <include file="1781198128_optimizations.sql" relativeToChangelogFile="true"/>
+
+    <changeSet id="tag_after" author="shapovalov">
+        <tagDatabase tag="after"/>
+    </changeSet>
+
+</databaseChangeLog>

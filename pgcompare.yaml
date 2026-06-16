@@ -1,0 +1,46 @@
+﻿migration:
+  before_version: "before"
+  after_version: "after"
+
+setup:
+  command: "docker compose up -d haproxy && docker compose run --rm -T migrations && echo seed skipped (data in migrations)"
+
+benchmark:
+  before_queries: queries_before.sql
+  after_queries: queries_after.sql
+  repeats: 3
+  warmup_iterations: 5
+  iterations: 200
+  concurrency: 4
+
+report:
+  description:
+    - query: get_total_points_by_house
+      what: "Запрос переписан: сначала выполняется агрегация баллов по house_id через CTE, потом результат соединяется с таблицей house. Используется покрывающий индекс по (house_id) INCLUDE (points)."
+      changes: "Переписывание запроса + покрывающий индекс"
+      expected: "Снижение времени выполнения за счет того, что база не делает Join огромной таблицы с логами перед группировкой."
+
+    - query: find_student_exams
+      what: "Создан частичный индекс на таблицу exam_result для отличников."
+      changes: "Частичный индекс"
+      expected: "Исключение Seq Scan. Планировщик будет использовать Index Scan, сканируя крошечный индекс вместо всей таблицы оценок."
+
+    - query: get_student_wands
+      what: "Создан частично-покрывающий индекс по таблице wand. Индекс хранит нужные поля в самом дереве и применяется только к дубовым палочкам."
+      changes: "Частично-покрывающий индекс"
+      expected: "Достижение Index Only Scan без обращений к самой таблице, ускорение выборки в несколько раз."
+
+    - query: recent_incidents_report
+      what: "Добавлен покрывающий B-Tree индекс по (incident_date DESC) INCLUDE (title)."
+      changes: "Покрывающий индекс с предварительной сортировкой"
+      expected: "Полное устранение узла Sort в плане выполнения и переход на Index Only Scan, что важно для растущих лог-таблиц."
+
+    - query: house_members_count
+      what: "Избавление от тяжелого LEFT JOIN и GROUP BY всего датасета. Запрос переписан на использование коррелированного подзапроса в SELECT. Для его ускорения добавлен индекс на student(house_id)."
+      changes: "Переписывание SQL + индекс на FK"
+      expected: "Устранение ресурсоемкого узла HashAggregate/GroupAggregate, планировщик использует быстрый Index Only Scan для подсчета."
+
+    - query: top_students_by_points
+      what: "Оптимизация текста запроса через CTE: сначала группируем записи, применяем ORDER BY и LIMIT 10, и только для этих 10 строк делаем JOIN с таблицами person и student. Также добавлен покрывающий индекс (student_id) INCLUDE (points)."
+      changes: "Переписывание SQL + покрывающий индекс"
+      expected: "Количество операций JOIN сокращается с сотен тысяч до ровно 10."

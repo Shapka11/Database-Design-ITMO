@@ -1,0 +1,14 @@
+{
+  "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+  "plugin.name": "pgoutput",
+  "database.hostname": "haproxy",
+  "database.port": "5432",
+  "database.user": "dbz_user",
+  "database.password": "dbz_secure_password",
+  "database.dbname": "postgres",
+  "topic.prefix": "pg_cdc",
+  "table.include.list": "public.house_point_logs",
+  "slot.name": "dbz_slot_house_point_logs",
+  "publication.name": "dbz_publication",
+  "snapshot.mode": "initial"
+}

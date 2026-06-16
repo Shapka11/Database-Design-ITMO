@@ -1,0 +1,6 @@
+apiVersion: 1
+
+providers:
+  - name: 'Postgres Dashboards'
+    options:
+      path: /etc/grafana/dashboards

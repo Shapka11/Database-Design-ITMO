@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'postgres'
+    static_configs:
+      - targets: [ 'postgres-exporter:9187' ]
+
+  - job_name: 'minio'
+    metrics_path: /minio/v2/metrics/cluster
+    static_configs:
+      - targets: [ 'minio:9000' ]
+
+  - job_name: 'backup-exporter'
+    fallback_scrape_protocol: "PrometheusText1.0.0"
+    static_configs:
+      - targets: [ 'backup:8080' ]
+
+  - job_name: 'patroni'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: [ 'pg1:8008', 'pg2:8008' ]
