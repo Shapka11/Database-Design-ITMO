@@ -1,0 +1,129 @@
+Table persons {
+  person_id bigserial [pk]
+  first_name text [not null]
+  last_name text [not null]
+  birth_date date
+  blood_status text
+  is_alive boolean [default: true]
+}
+
+Table houses {
+  house_id bigserial [pk]
+  name text [not null, unique]
+  founder text [not null]
+  colors text
+  animal text
+}
+
+Table locations {
+  location_id bigserial [pk]
+  name text [not null]
+  type text
+}
+
+Table students {
+  student_id bigserial [pk]
+  person_id bigint [not null, unique, ref: - persons.person_id]
+  house_id bigint [not null, ref: > houses.house_id]
+  enrollment_year integer [not null]
+}
+
+Table staff {
+  staff_id bigserial [pk]
+  person_id bigint [not null, unique, ref: - persons.person_id]
+  role text [not null]
+  hire_date date [not null]
+}
+
+Table villains {
+  villain_id bigserial [pk]
+  person_id bigint [not null, unique, ref: - persons.person_id]
+  alias text
+  threat_level text [not null]
+  affiliation text
+}
+
+Table wands {
+  wand_id bigserial [pk]
+  owner_id bigint [ref: > persons.person_id]
+  wood_type text [not null]
+  core_type text [not null]
+  length_inches numeric(4,2)
+}
+
+Table quidditch_teams {
+  quidditch_team_id bigserial [pk]
+  house_id bigint [not null, unique, ref: - houses.house_id]
+  captain_student_id bigint [ref: > students.student_id]
+}
+
+Table quidditch_players {
+  quidditch_player_id bigserial [pk]
+  team_id bigint [not null, ref: > quidditch_teams.quidditch_team_id]
+  student_id bigint [not null, ref: > students.student_id]
+  position text [not null]
+}
+
+Table quidditch_matches {
+  quidditch_match_id bigserial [pk]
+  home_team_id bigint [not null, ref: > quidditch_teams.quidditch_team_id]
+  away_team_id bigint [not null, ref: > quidditch_teams.quidditch_team_id]
+  match_date timestamp [not null]
+  home_score integer [default: 0]
+  away_score integer [default: 0]
+  snitch_caught_by_team_id bigint [ref: > quidditch_teams.quidditch_team_id]
+}
+
+Table subjects {
+  subject_id bigserial [pk]
+  name text [not null, unique]
+  is_elective boolean [default: false]
+}
+
+Table exam_results {
+  exam_result_id bigserial [pk]
+  student_id bigint [not null, ref: > students.student_id]
+  subject_id bigint [not null, ref: > subjects.subject_id]
+  grade text [not null]
+  exam_date date [not null]
+}
+
+Table spells {
+  spell_id bigserial [pk]
+  incantation text [not null, unique]
+  name text [not null]
+  is_unforgivable boolean [default: false]
+}
+
+Table spell_masteries {
+  spell_mastery_id bigserial [pk]
+  student_id bigint [not null, ref: > students.student_id]
+  spell_id bigint [not null, ref: > spells.spell_id]
+  mastered_date date [not null]
+}
+
+Table incidents {
+  incident_id bigserial [pk]
+  title text [not null]
+  description text [not null]
+  location_id bigint [not null, ref: > locations.location_id]
+  incident_date timestamp [not null]
+  instigator_villain_id bigint [ref: > villains.villain_id]
+}
+
+Table incident_participants {
+  incident_participant_id bigserial [pk]
+  incident_id bigint [not null, ref: > incidents.incident_id]
+  person_id bigint [not null, ref: > persons.person_id]
+  role text [not null]
+}
+
+Table house_point_logs {
+  house_point_log_id bigserial [pk]
+  house_id bigint [not null, ref: > houses.house_id]
+  student_id bigint [ref: > students.student_id]
+  awarded_by_staff_id bigint [not null, ref: > staff.staff_id]
+  points integer [not null]
+  reason text [not null]
+  created_at timestamp [not null, default: `now()`]
+}
