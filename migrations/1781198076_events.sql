@@ -7,7 +7,7 @@ CREATE TABLE incidents
     title                 TEXT      NOT NULL,
     description           TEXT      NOT NULL,
     location_id           BIGINT    NOT NULL REFERENCES locations (location_id),
-    incident_date         TIMESTAMP NOT NULL,
+    incident_date         TIMESTAMPTZ NOT NULL,
     instigator_villain_id BIGINT REFERENCES villains (villain_id)
 );
 -- rollback DROP TABLE IF EXISTS incidents;
@@ -31,6 +31,6 @@ CREATE TABLE house_point_logs
     awarded_by_staff_id BIGINT    NOT NULL REFERENCES staff (staff_id),
     points              INTEGER   NOT NULL,
     reason              TEXT      NOT NULL,
-    created_at          TIMESTAMP NOT NULL DEFAULT now()
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 -- rollback DROP TABLE IF EXISTS house_point_logs;
